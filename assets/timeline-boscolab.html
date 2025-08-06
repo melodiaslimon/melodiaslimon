@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia STEAM - IETC San Juan Bosco</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header .school {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #5f27cd);
+            border-radius: 3px;
+            animation: lineGrow 2.5s ease-out 0.5s both;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 80px 0;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.6s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.9s; }
+        .timeline-item:nth-child(4) { animation-delay: 1.2s; }
+        .timeline-item:nth-child(5) { animation-delay: 1.5s; }
+        .timeline-item:nth-child(6) { animation-delay: 1.8s; }
+
+        .timeline-content {
+            width: 45%;
+            padding: 35px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border: 20px solid transparent;
+            transform: translateY(-50%);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -40px;
+            border-left-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -40px;
+            border-right-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .year {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .project-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 1rem;
+            line-height: 1.4;
+            transition: all 0.3s ease;
+        }
+
+        .project-list li:hover {
+            transform: translateX(10px);
+            color: #feca57;
+        }
+
+        .project-list li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            color: #feca57;
+            font-size: 1.2rem;
+            animation: sparkle 2s ease-in-out infinite alternate;
+        }
+
+        .url-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .url-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #feca57, #ff6b6b);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-radius: 50%;
+            border: 5px solid white;
+            z-index: 2;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            animation: pulse 3s infinite;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .timeline-dot:hover {
+            transform: translate(-50%, -50%) scale(1.6);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+        }
+
+        .timeline-dot.special {
+            background: linear-gradient(45deg, #5f27cd, #341f97);
+            box-shadow: 0 0 20px rgba(95, 39, 205, 0.5);
+        }
+
+        .timeline-dot.special:hover {
+            box-shadow: 0 0 30px rgba(95, 39, 205, 0.8);
+        }
+
+        .highlight {
+            background: rgba(254, 202, 87, 0.2);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes lineGrow {
+            from {
+                height: 0;
+            }
+            to {
+                height: 100%;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(255, 107, 107, 0.8);
+            }
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes sparkle {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                transform: scale(1.2) rotate(180deg);
+            }
+        }
+
+        .stats-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1rem;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideUp 1s ease-out 2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 80px);
+                margin-left: 80px !important;
+            }
+            
+            .timeline-content::before {
+                left: -40px !important;
+                border-right-color: rgba(255, 255, 255, 0.12) !important;
+                border-left-color: transparent !important;
+            }
+            
+            .timeline-dot {
+                left: 30px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .year {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EVOLUCIÓN STEAM</h1>
+            <div class="subtitle">Centro de Interés STEAM</div>
+            <div class="school">IETC San Juan Bosco</div>
+        </div>
+
+        <div class="timeline">
+            <!-- 2018 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="year">2018</div>
+                    <div class="project-title">🚀 Inicio de la Era STEAM</div>
+                    <ul class="project-list">
+                        <li><span class="highlight">Automatización del Timbre Escolar</span> - Primer proyecto de aula con enfoque tecnológico</li>
+                        <li><span class="highlight">Torneo de Videojuegos Halo</span> - Gamificación educativa</li>
+                        <li><span class="highlight">Sistema de Urna Electrónica</span> - Votaciones gobierno escolar (offline)</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <!-- 2019 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="year">2019</div>
+                    <div class="project-title">🏫 Consolidación del Aula STEAM</div>
+                    <ul class="project-list">
+                        <li><span class="highlight">Creación del Aula STEAM</span> - Espacio dedicado a la innovación educativa</li>
+                        <li><span class="highlight">Proyecto "Mi-Escuela"</span> - Moodle en Raspberry Pi para educación rural offline</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <!-- 2020 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="year">2020</div>
+                    <div class="project-title">🎵 Creatividad Digital</div>
+                    <ul class="project-list">
+                        <li><span class="highlight">Proyecto "Melodías del Limón"</span> - Plataforma web interactiva</li>
+                    </ul>
+                    <a href="https://melodiaslimon.github.io/melodiaslimon" target="_blank" class="url-link">
+                        🌐 Visitar melodiaslimon.github.io
+                    </a>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <!-- 2024 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="year">2024</div>
+                    <div class="project-title">🤖 Inteligencia Artificial Educativa</div>
+                    <ul class="project-list">
+                        <li><span class="highlight">EduNinja</span> - Evaluación asistida por IA revolucionando la educación</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <!-- 2025 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="year">2025</div>
+                    <div class="project-title">🧪 BoscoLab - El Futuro</div>
+                    <ul class="project-list">
+                        <li><span class="highlight">Centro de Interés BoscoLab</span> - 7 años de experiencia STEAM consolidada</li>
+                        <li>Innovación, tecnología y educación del futuro</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot special"></div>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            📊 7 años de innovación • 8+ proyectos • ∞ impacto educativo
+        </div>
+    </div>
+
+    <script>
+        // Añadir interactividad adicional
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const dots = document.querySelectorAll('.timeline-dot');
+
+            // Efecto de hover para los elementos de la timeline
+            timelineItems.forEach((item, index) => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                    dots[index].style.transform = 'translate(-50%, -50%) scale(1.8)';
+                });
+
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    dots[index].style.transform = 'translate(-50%, -50%) scale(1)';
+                });
+            });
+
+            // Efecto de click en los puntos de la timeline
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    timelineItems[index].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // Efecto de pulso temporal
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = 'pulse 1s ease-in-out 3';
+                    }, 10);
+                });
+            });
+
+            // Animación de aparición basada en scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            timelineItems.forEach(item => {
+                observer.observe(item);
+            });
+        });
+    </script>
+</body>
+</html>
