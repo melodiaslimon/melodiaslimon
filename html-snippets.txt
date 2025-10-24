@@ -160,7 +160,7 @@
        sizes="(max-width: 600px) 400px, (max-width: 1000px) 800px, 1200px">
 </picture>
 
-<!-- fotos/alianza2.jpeg -->
+<!-- fotos/alianza2.png -->
 <picture>
   <source type="image/webp"
           srcset="images-optimized/fotos/alianza2-400w.webp 400w,
@@ -171,6 +171,22 @@
           images-optimized/fotos/alianza2-800w.jpeg 800w,
           images-optimized/fotos/alianza2-1200w.jpeg 1200w">
   <img src="images-optimized/fotos/alianza2-800w.jpeg"
+       alt="Descripción de la imagen"
+       loading="lazy"
+       sizes="(max-width: 600px) 400px, (max-width: 1000px) 800px, 1200px">
+</picture>
+
+<!-- fotos/alianza3.png -->
+<picture>
+  <source type="image/webp"
+          srcset="images-optimized/fotos/alianza3-400w.webp 400w,
+          images-optimized/fotos/alianza3-800w.webp 800w,
+          images-optimized/fotos/alianza3-1200w.webp 1200w">
+  <source type="image/jpeg"
+          srcset="images-optimized/fotos/alianza3-400w.jpeg 400w,
+          images-optimized/fotos/alianza3-800w.jpeg 800w,
+          images-optimized/fotos/alianza3-1200w.jpeg 1200w">
+  <img src="images-optimized/fotos/alianza3-800w.jpeg"
        alt="Descripción de la imagen"
        loading="lazy"
        sizes="(max-width: 600px) 400px, (max-width: 1000px) 800px, 1200px">
