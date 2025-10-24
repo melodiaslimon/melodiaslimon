@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melodías del Limón - Del Desperdicio a la Riqueza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-green: #58CC02;
+            --secondary-green: #46A302;
+            --accent-yellow: #FFD93D;
+            --accent-orange: #FF9500;
+            --text-dark: #2D3436;
+            --text-light: #636E72;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --border-color: #E9ECEF;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-medium: 0 4px 16px rgba(0,0,0,0.15);
+            --shadow-heavy: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: var(--white);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(88, 204, 2, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--white), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 50%, var(--accent-orange) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text {
+            color: var(--white);
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-text .highlight {
+            color: var(--accent-yellow);
+            text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: slideInLeft 1s ease-out 0.2s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            animation: slideInLeft 1s ease-out 0.4s both;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--primary-green);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--white);
+            color: var(--primary-green);
+            transform: translateY(-3px);
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: slideInRight 1s ease-out;
+        }
+
+        .hero-visual img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: var(--shadow-heavy);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background: var(--light-gray);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-orange));
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Video Section */
+        .video-section {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .video-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-orange));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .video-placeholder::after {
+            content: '🎥';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            opacity: 0.8;
+        }
+
+        .video-info {
+            padding: 1.5rem;
+        }
+
+        .video-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .video-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            padding: 6rem 0;
+            background: var(--light-gray);
+        }
+
+        .map-container {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            margin-top: 3rem;
+        }
+
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+
+        .map-legend {
+            padding: 1.5rem;
+            background: var(--light-gray);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .map-legend h4 {
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: var(--white);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .lightbox img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+
+        .footer-section p, .footer-section a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-green);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 1rem;
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .cta-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#inicio" class="logo">
+                <img src="assets/logo.gif" alt="Melodías del Limón">
+                <h1>Melodías del Limón</h1>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#proyecto">Proyecto</a></li>
+                <li><a href="#videos">Videos</a></li>
+                <li><a href="#aliados">Aliados</a></li>
+                <li><a href="#galeria">Galería</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Del <span class="highlight">desperdicio</span> a la <span class="highlight">riqueza</span></h1>
+                <p>Transformamos los desechos del limón en productos innovadores y sostenibles, creando oportunidades de aprendizaje y desarrollo comunitario en San Luis, Tolima.</p>
+                <div class="cta-buttons">
+                    <a href="#proyecto" class="btn btn-primary">
+                        <i class="fas fa-play"></i>
+                        Conoce el Proyecto
+                    </a>
+                    <a href="#videos" class="btn btn-secondary">
+                        <i class="fas fa-video"></i>
+                        Ver Videos
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <img src="assets/fotos/mochila.png" alt="Proyecto Melodías del Limón">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="proyecto" class="features">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2>Nuestro Proyecto Pedagógico Productivo</h2>
+                <p>Una experiencia STEAM+E que integra Ciencia, Tecnología, Ingeniería, Arte, Matemáticas y Emprendimiento para transformar la educación y la comunidad.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Educación STEAM+E</h3>
+                    <p>Integramos múltiples disciplinas para desarrollar competencias del siglo XXI a través del aprendizaje experiencial y contextualizado.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>Sostenibilidad Ambiental</h3>
+                    <p>Contribuimos a los ODS mediante la reducción del desperdicio de alimentos y la promoción de prácticas sostenibles en la comunidad.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Impacto Comunitario</h3>
+                    <p>Fortalecimos el sector agroindustrial local y creamos oportunidades de desarrollo económico para la comunidad de San Luis.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3>Innovación Productiva</h3>
+                    <p>Desarrollamos productos de valor agregado como polvo de limón, cosméticos y aromatizantes utilizando tecnología avanzada.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Red de Aliados</h3>
+                    <p>Colaboramos con empresas locales, instituciones educativas y organismos gubernamentales para maximizar nuestro impacto.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Desarrollo Empresarial</h3>
+                    <p>Formamos estudiantes con habilidades empresariales y de gestión de proyectos para el mundo laboral del futuro.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section id="videos" class="video-section">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2>Videos del Proyecto</h2>
+                <p>Descubre el proceso, los logros y las historias detrás de Melodías del Limón a través de nuestros videos educativos.</p>
+            </div>
+            <div class="video-grid">
+                <div class="video-card animate-on-scroll">
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h3>Presentación del Proyecto</h3>
+                        <p>Conoce los objetivos y la metodología STEAM+E de nuestro proyecto pedagógico productivo.</p>
+                    </div>
+                </div>
+                <div class="video-card animate-on-scroll">
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h3>Proceso de Producción</h3>
+                        <p>Observa cómo transformamos los desechos del limón en productos de valor agregado.</p>
+                    </div>
+                </div>
+                <div class="video-card animate-on-scroll">
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h3>Testimonios Estudiantiles</h3>
+                        <p>Escucha las experiencias y aprendizajes de nuestros estudiantes participantes.</p>
+                    </div>
+                </div>
+                <div class="video-card animate-on-scroll">
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h3>Feria de Emprendimiento 2023</h3>
+                        <p>Revive los momentos destacados de nuestra participación en la feria de emprendimiento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="aliados" class="map-section">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2>Nuestra Red de Aliados</h2>
+                <p>Conoce los socios estratégicos que nos acompañan en esta transformación educativa y comunitaria en San Luis, Tolima.</p>
+            </div>
+            <div class="map-container animate-on-scroll">
+                <div id="map"></div>
+                <div class="map-legend">
+                    <h4>Tipos de Aliados</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--primary-green);"></div>
+                            <span>Instituciones Educativas</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--accent-orange);"></div>
+                            <span>Empresas Locales</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--accent-yellow);"></div>
+                            <span>Organismos Gubernamentales</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #8E44AD;"></div>
+                            <span>Organizaciones Comunitarias</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="galeria" class="gallery-section">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <h2>Galería de Imágenes</h2>
+                <p>Un recorrido visual por nuestro proyecto, desde el proceso de producción hasta los productos finales y momentos especiales.</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/fotos/1.png" alt="Proceso de producción">
+                    <div class="gallery-overlay">
+                        <h4>Proceso de Producción</h4>
+                        <p>Estudiantes trabajando en el laboratorio</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/fotos/2.png" alt="Aula de clases">
+                    <div class="gallery-overlay">
+                        <h4>Aula STEAM+E</h4>
+                        <p>Ambiente de aprendizaje innovador</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/fotos/3.png" alt="Laboratorio">
+                    <div class="gallery-overlay">
+                        <h4>Laboratorio</h4>
+                        <p>Equipos de procesamiento de alimentos</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/fotos/4.jpeg" alt="Producto final">
+                    <div class="gallery-overlay">
+                        <h4>Producto Final</h4>
+                        <p>Polvo de limón envasado</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/fotos/5.jpeg" alt="Control de calidad">
+                    <div class="gallery-overlay">
+                        <h4>Control de Calidad</h4>
+                        <p>Análisis de productos desarrollados</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/fotos/6.png" alt="Feria de emprendimiento">
+                    <div class="gallery-overlay">
+                        <h4>Feria 2023</h4>
+                        <p>Participación en feria de emprendimiento</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/AI/powder-banner.png" alt="Banner del producto">
+                    <div class="gallery-overlay">
+                        <h4>Diseño de Producto</h4>
+                        <p>Banner promocional del polvo de limón</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/AI/aroma-citrus.png" alt="Aromatizante">
+                    <div class="gallery-overlay">
+                        <h4>Aromatizante</h4>
+                        <p>Producto aromático desarrollado</p>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll">
+                    <img src="assets/AI/cosmetics-citrus.png" alt="Cosmética">
+                    <div class="gallery-overlay">
+                        <h4>Línea Cosmética</h4>
+                        <p>Productos de belleza naturales</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Melodías del Limón</h3>
+                    <p>Proyecto Pedagógico Productivo que transforma el desperdicio en riqueza, desarrollando competencias STEAM+E en estudiantes de San Luis, Tolima.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <p><a href="#proyecto">Sobre el Proyecto</a></p>
+                    <p><a href="#videos">Videos</a></p>
+                    <p><a href="#aliados">Aliados</a></p>
+                    <p><a href="#galeria">Galería</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p><i class="fas fa-envelope"></i> diego.beltran@sedtolima.edu.co</p>
+                    <p><i class="fas fa-map-marker-alt"></i> San Luis, Tolima, Colombia</p>
+                    <p><i class="fas fa-school"></i> I.E.T.C. San Juan Bosco</p>
+                </div>
+                <div class="footer-section">
+                    <h3>ODS Alineados</h3>
+                    <p>🎯 ODS 4: Educación de Calidad</p>
+                    <p>🏭 ODS 9: Industria e Innovación</p>
+                    <p>🌱 ODS 12: Consumo Responsable</p>
+                    <p>🌍 ODS 13: Acción Climática</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Melodías del Limón - Proyecto Pedagógico Productivo. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <img src="" alt="Imagen ampliada" id="lightbox-img">
+            <button class="lightbox-close" id="lightbox-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Gallery lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+
+        galleryItems.forEach(img => {
+            img.addEventListener('click', () => {
+                lightboxImg.src = img.src;
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        lightboxClose.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Initialize map
+        const map = L.map('map').setView([4.0, -75.0], 8);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add markers for partners (example locations in Tolima)
+        const partners = [
+            {
+                name: 'I.E.T.C. San Juan Bosco',
+                type: 'Instituciones Educativas',
+                coordinates: [4.0, -75.0],
+                description: 'Institución educativa principal del proyecto'
+            },
+            {
+                name: 'SEDTOLIMA',
+                type: 'Organismos Gubernamentales',
+                coordinates: [4.1, -74.9],
+                description: 'Secretaría de Educación del Tolima'
+            },
+            {
+                name: 'Productores Locales',
+                type: 'Empresas Locales',
+                coordinates: [3.9, -75.1],
+                description: 'Red de productores de limón de San Luis'
+            },
+            {
+                name: 'Comunidad San Luis',
+                type: 'Organizaciones Comunitarias',
+                coordinates: [4.05, -75.05],
+                description: 'Comunidad beneficiaria del proyecto'
+            }
+        ];
+
+        const colors = {
+            'Instituciones Educativas': '#58CC02',
+            'Empresas Locales': '#FF9500',
+            'Organismos Gubernamentales': '#FFD93D',
+            'Organizaciones Comunitarias': '#8E44AD'
+        };
+
+        partners.forEach(partner => {
+            const marker = L.circleMarker(partner.coordinates, {
+                radius: 8,
+                fillColor: colors[partner.type],
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            marker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif;">
+                    <h4 style="margin: 0 0 8px 0; color: #2D3436;">${partner.name}</h4>
+                    <p style="margin: 0 0 8px 0; color: #636E72; font-size: 0.9rem;">${partner.type}</p>
+                    <p style="margin: 0; color: #636E72; font-size: 0.85rem;">${partner.description}</p>
+                </div>
+            `);
+        });
+
+        // Video placeholder click handlers
+        document.querySelectorAll('.video-placeholder').forEach(placeholder => {
+            placeholder.addEventListener('click', () => {
+                // Here you would typically open a video modal or navigate to video page
+                alert('Funcionalidad de video próximamente disponible');
+            });
+        });
+
+        // Mobile menu toggle (basic implementation)
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    navMenu.style.display = 'none';
+                }
+            });
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const rate = scrolled * -0.5;
+            hero.style.transform = `translateY(${rate}px)`;
+        });
+    </script>
+</body>
+</html>
